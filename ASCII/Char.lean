@@ -51,6 +51,64 @@ def ofUnicode! (c : Unicode.Char) : ASCII.Char :=
   if h : c.isASCII then .ofUnicode c h else panic! "character not in ASCII range"
 alias _root_.Char.toASCII! := ofUnicode!
 
+/-! ## Character Properties -/
+
+/-- Control character -/
+@[inline] def isCntrl (c : Char) :=
+  c.toByte < 32 || c.toByte == 127
+
+/-- Spacing character -/
+@[inline] def isSpace (c : Char) :=
+  c.toByte == 32 || 9 ≤ c.toByte && c.toByte ≤ 13
+
+/-- Blank character -/
+@[inline] def isBlank (c : Char) :=
+  c.toByte == 32 || c.toByte == 9
+
+/-- Decimal digit -/
+@[inline] def isDigit (c : Char) :=
+  48 ≤ c.toByte && c.toByte ≤ 57
+
+/-- Hexadecimal digit -/
+@[inline] def isXDigit (c : Char) :=
+  48 ≤ c.toByte && (c.toByte ≤ 57 ||
+    65 ≤ c.toByte && (c.toByte ≤ 70 ||
+      97 ≤ c.toByte && c.toByte ≤ 102))
+
+/-- Lowercase letter -/
+@[inline] def isLower (c : Char) :=
+  97 ≤ c.toByte && c.toByte ≤ 122
+
+/-- Uppercase letter -/
+@[inline] def isUpper (c : Char) :=
+  65 ≤ c.toByte && c.toByte ≤ 90
+
+/-- Alphabetic letter -/
+@[inline] def isAlpha (c : Char) :=
+  65 ≤ c.toByte && (c.toByte ≤ 90 ||
+    97 ≤ c.toByte && c.toByte ≤ 122)
+
+/-- Alphabetic letter or decimal digit -/
+@[inline] def isAlnum (c : Char) :=
+  48 ≤ c.toByte && (c.toByte ≤ 57 ||
+    65 ≤ c.toByte && (c.toByte ≤ 90 ||
+      97 ≤ c.toByte && c.toByte ≤ 122))
+
+/-- Punctuation character -/
+@[inline] def isPunct (c : Char) :=
+  33 ≤ c.toByte && (c.toByte ≤ 47 ||
+    58 ≤ c.toByte && (c.toByte ≤ 64 ||
+      91 ≤ c.toByte && (c.toByte ≤ 96 ||
+        123 ≤ c.toByte && c.toByte ≤ 126)))
+
+/-- Graphical character -/
+@[inline] def isGraph (c : Char) :=
+  0x21 ≤ c.toByte && c.toByte ≤ 0x7E
+
+/-- Printable character -/
+@[inline] def isPrint (c : Char) :=
+  0x20 ≤ c.toByte && c.toByte ≤ 0x7E
+
 /-! ## Special Characters -/
 
 /-- Null character (ASCII NUL) -/
@@ -156,41 +214,3 @@ protected def sp  : Char := ⟨0x20, by decide⟩
 
 /-- Delete (ASCII DEL) -/
 protected def del : Char := ⟨0x7F, by decide⟩
-
-/-! ## Character Properties -/
-
-/-- Control character -/
-def isCntrl (c : Char) := c.toByte < 32 || c.toByte == 127
-
-/-- Spacing character -/
-def isSpace (c : Char) := c.toByte == 32 || 9 ≤ c.toByte && c.toByte ≤ 13
-
-/-- Blank character -/
-def isBlank (c : Char) := c.toByte == 32 || c.toByte == 9
-
-/-- Decimal digit -/
-def isDigit (c : Char) := 48 ≤ c.toByte && c.toByte ≤ 57
-
-/-- Hexadecimal digit -/
-def isXDigit (c : Char) := c.isDigit || 65 ≤ c.toByte && c.toByte ≤ 70 || 97 ≤ c.toByte && c.toByte ≤ 102
-
-/-- Lowercase letter -/
-def isLower (c : Char) := 97 ≤ c.toByte && c.toByte ≤ 122
-
-/-- Uppercase letter -/
-def isUpper (c : Char) := 65 ≤ c.toByte && c.toByte ≤ 90
-
-/-- Alphabetic letter -/
-def isAlpha (c : Char) := c.isLower || c.isUpper
-
-/-- Alphabetic letter or decimal digit -/
-def isAlnum (c : Char) := c.isAlpha || c.isDigit
-
-/-- Punctuation character -/
-def isPunct (c : Char) := 33 ≤ c.toByte && c.toByte ≤ 47 || 58 ≤ c.toByte && c.toByte ≤ 64 || 91 ≤ c.toByte && c.toByte ≤ 96 || 123 ≤ c.toByte && c.toByte ≤ 126
-
-/-- Graphical character -/
-def isGraph (c : Char) := 0x21 ≤ c.toByte && c.toByte ≤ 0x7E
-
-/-- Printable character -/
-def isPrint (c : Char) := 0x20 ≤ c.toByte && c.toByte ≤ 0x7E
