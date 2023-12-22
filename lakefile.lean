@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package ASCII where
+package ASCII
 
 @[default_target]
 lean_lib ASCII where
