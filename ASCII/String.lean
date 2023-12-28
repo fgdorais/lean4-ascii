@@ -38,6 +38,9 @@ termination_by loop => s.length - i
 instance : Coe ASCII.String Unicode.String where
   coe := String.toUnicode
 
+instance : ToString ASCII.String where
+  toString s := s.toUnicode
+
 /-- Coerce a Unicode string into an ASCII string -/
 @[extern "lean_string_to_utf8"]
 opaque String.ofUnicode (s : @&Unicode.String) (h : s.isASCII) : ASCII.String
