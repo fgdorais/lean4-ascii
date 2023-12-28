@@ -26,7 +26,7 @@ instance : GetElem String Nat Char fun s i => i < s.length where
 
 /-- Coercion from ASCII string to Unicode string -/
 @[coe, extern "lean_string_from_utf8_unchecked"]
-def String.toUnicode (s : ASCII.String) : Unicode.String :=
+def String.toUnicode (s : @&ASCII.String) : Unicode.String :=
   loop 0 (Nat.zero_le _) ""
 where
   loop (i : Nat) (hi : i ≤ s.length) (r : Unicode.String) :=
@@ -40,7 +40,7 @@ instance : Coe ASCII.String Unicode.String where
 
 /-- Coerce a Unicode string into an ASCII string -/
 @[extern "lean_string_to_utf8"]
-opaque String.ofUnicode (s : Unicode.String) (h : s.isASCII) : ASCII.String
+opaque String.ofUnicode (s : @&Unicode.String) (h : s.isASCII) : ASCII.String
 alias _root_.String.toASCII := String.ofUnicode
 
 @[inherit_doc String.ofUnicode]
@@ -53,8 +53,6 @@ def String.ofUnicode! (s : Unicode.String) : ASCII.String :=
   if h : s.isASCII then .ofUnicode s h else panic! "characters out of ASCII range"
 alias _root_.String.toASCII! := String.ofUnicode!
 
-end ASCII
-
 open Lean Parser in
 /-- Syntax for ASCII string -/
 syntax (name:=asciiStrLit) "a" noWs strLit : term
@@ -62,9 +60,9 @@ syntax (name:=asciiStrLit) "a" noWs strLit : term
 macro_rules
   | `(a$s) =>
     if s.getString.isASCII then
-      `(String.toASCII! $s)
+      `(String.toASCII $s rfl)
     else
-      Lean.Macro.throwError "expected ASCII character"
+      Lean.Macro.throwError "expected ASCII string"
 
 instance : Repr ASCII.String where
   reprPrec s _ := s!"a{repr s.toUnicode}"
