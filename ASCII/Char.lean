@@ -65,6 +65,19 @@ def ofUnicode! (c : Unicode.Char) : ASCII.Char :=
   if h : c.isASCII then ofUnicode c h else panic! "character not in ASCII range"
 alias _root_.Char.toASCII! := ofUnicode!
 
+instance : Repr ASCII.Char where
+  reprPrec char prec :=
+    Repr.addAppParen
+      (Std.Format.group
+        (Std.Format.nest (if prec >= max_prec then 1 else 2)
+          (Std.Format.text "ASCII.Char.ofNat" ++
+            Std.Format.line ++
+            reprArg char.toNat)))
+      prec
+
+instance : ToString ASCII.Char where
+  toString char := char.toUnicode.toString
+
 /-! ## Character Properties -/
 
 /-- Control character -/
