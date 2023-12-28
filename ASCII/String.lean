@@ -7,7 +7,9 @@ import ASCII.Char
 namespace ASCII
 
 structure String where
+  /-- Underlying byte data -/
   toByteArray : ByteArray
+  /-- Validity -/
   valid (i : Fin toByteArray.size) : toByteArray[i] < 128
 
 /-- Empty string -/

@@ -6,12 +6,18 @@ import ASCII.String
 
 namespace ASCII
 
+/-- ASCII substring type -/
 structure Substring where
-  data : String
+  /-- Underlying string -/
+  data  : String
+  /-- Start position -/
   start : Nat
-  stop : Nat
+  /-- Stop position -/
+  stop  : Nat
+  /-- Validity condition -/
   valid : start ≤ stop ∧ stop ≤ data.length
 
+/-- Length of a substring -/
 abbrev Substring.length (s : Substring) := s.stop - s.start
 
 instance : GetElem Substring Nat Char fun s i => i < s.length where
