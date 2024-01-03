@@ -10,25 +10,27 @@ structure String where
   /-- Underlying byte data -/
   toByteArray : ByteArray
   /-- Validity -/
-  valid (i : Fin toByteArray.size) : toByteArray[i] < 128
+  valid (i) {h : i < toByteArray.size} : toByteArray[i] < 128
+
+namespace String
 
 /-- Empty string -/
-def String.empty : ASCII.String where
+def empty : ASCII.String where
   toByteArray := .empty
-  valid := (nomatch.)
+  valid := by intros; contradiction
 
 instance : Inhabited String where
   default := .empty
 
 /-- Length of a string -/
-abbrev String.length (s : ASCII.String) := s.toByteArray.size
+abbrev length (s : ASCII.String) := s.toByteArray.size
 
 instance : GetElem String Nat Char fun s i => i < s.length where
-  getElem s i h := ⟨s.toByteArray.get ⟨i, h⟩, s.valid ⟨i, h⟩⟩
+  getElem s i h := ⟨s.toByteArray.get ⟨i, h⟩, s.valid i⟩
 
 /-- Coercion from ASCII string to Unicode string -/
 @[coe, extern "lean_string_from_utf8_unchecked"]
-def String.toUnicode (s : @&ASCII.String) : Unicode.String :=
+def toUnicode (s : @&ASCII.String) : Unicode.String :=
   loop 0 (Nat.zero_le _) ""
 where
   loop (i : Nat) (hi : i ≤ s.length) (r : Unicode.String) :=
@@ -45,29 +47,62 @@ instance : ToString ASCII.String where
 
 /-- Coerce a Unicode string into an ASCII string -/
 @[extern "lean_string_to_utf8"]
-opaque String.ofUnicode (s : @&Unicode.String) (h : s.isASCII) : ASCII.String
-alias _root_.String.toASCII := String.ofUnicode
+opaque ofUnicode (s : @&Unicode.String) (h : s.isASCII) : ASCII.String
+alias _root_.String.toASCII := ofUnicode
 
 @[inherit_doc String.ofUnicode]
-def String.ofUnicode? (s : Unicode.String) : Option ASCII.String :=
+def ofUnicode? (s : Unicode.String) : Option ASCII.String :=
   if h : s.isASCII then some (.ofUnicode s h) else none
-alias _root_.String.toASCII? := String.ofUnicode?
+alias _root_.String.toASCII? := ofUnicode?
 
 @[inherit_doc String.ofUnicode]
-def String.ofUnicode! (s : Unicode.String) : ASCII.String :=
+def ofUnicode! (s : Unicode.String) : ASCII.String :=
   if h : s.isASCII then .ofUnicode s h else panic! "characters out of ASCII range"
-alias _root_.String.toASCII! := String.ofUnicode!
+alias _root_.String.toASCII! := ofUnicode!
+
+/-- Append a character `c` at the end of string `s` -/
+def push (s : String) (c : Char) : String where
+  toByteArray := s.toByteArray.push c.toByte
+  valid i h := by
+    if hlt : i < s.toByteArray.size then
+      rw [ByteArray.get_push_lt _ _ _ hlt]
+      exact s.valid i
+    else
+      have heq : i = s.toByteArray.size := by
+        apply Nat.le_antisymm
+        · apply Nat.le_of_lt_succ
+          rwa [ByteArray.size_push] at h
+        · exact Nat.le_of_not_gt hlt
+      cases heq
+      rw [ByteArray.get_push_eq]
+      exact c.valid
+
+/-- Append a string `t` at the end of string `s` -/
+def append (s t : String) : String where
+  toByteArray := s.toByteArray ++ t.toByteArray
+  valid i h := by
+    simp [getElem_fin, ByteArray.getElem_eq_data_getElem, ByteArray.append_data]
+    if hlt : i < s.toByteArray.size then
+      rw [Array.get_append_left]; exact s.valid (h:=hlt)
+    else
+      have hle : s.toByteArray.size ≤ i := Nat.le_of_not_gt hlt
+      have h : i - s.toByteArray.size < t.toByteArray.size :=
+        Nat.sub_lt_left_of_lt_add hle (ByteArray.size_append .. ▸ h)
+      rw [Array.get_append_right (hle:=hle) (hlt:=h)]
+      exact t.valid (i - s.toByteArray.size)
+
+/-- Extract a substring from string `s` -/
+def extract (s : String) (start stop : Nat) : String where
+  toByteArray := s.toByteArray.extract start stop
+  valid i h := by rw [ByteArray.get_extract]; exact s.valid (start + i)
 
 open Lean Parser in
 /-- Syntax for ASCII string -/
-syntax (name:=asciiStrLit) "a" noWs strLit : term
-
-macro_rules
-  | `(a$s) =>
-    if s.getString.isASCII then
-      `(String.toASCII $s rfl)
-    else
-      Lean.Macro.throwError "expected ASCII string"
+macro "a" noWs s:strLit : term =>
+  if s.getString.isASCII then
+    `(String.toASCII $s rfl)
+  else
+    Lean.Macro.throwError "expected ASCII string"
 
 instance : Repr ASCII.String where
   reprPrec s _ := s!"a{repr s.toUnicode}"
