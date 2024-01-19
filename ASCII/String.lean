@@ -28,6 +28,9 @@ instance : Inhabited String where
 /-- Length of a string -/
 abbrev length (s : ASCII.String) := s.toByteArray.size
 
+@[ext] protected theorem ext : {s t : ASCII.String} → s.toByteArray = t.toByteArray → s = t
+  | ⟨_,_⟩, ⟨_,_⟩, rfl => rfl
+
 instance : GetElem String Nat Char fun s i => i < s.length where
   getElem s i h := ⟨s.toByteArray.get ⟨i, h⟩, s.valid i⟩
 
