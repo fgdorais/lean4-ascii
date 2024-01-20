@@ -45,6 +45,9 @@ protected def toUnicode (c : @&Char) : Unicode.Char where
 
 instance : Coe ASCII.Char Unicode.Char := ⟨ASCII.Char.toUnicode⟩
 
+theorem toUnicode_isASCII (c : Char) : c.toUnicode.isASCII := by
+  simp [Char.toUnicode, Char.isASCII, _root_.Char.toNat]; exact c.valid
+
 /-- Coerce a Unicode character into an ASCII character -/
 @[extern "lean_uint32_to_uint8"]
 def ofUnicode (c : @&Unicode.Char) (h : c.isASCII) : ASCII.Char where
