@@ -136,6 +136,30 @@ instance : ToString ASCII.Char where
 @[inline] def isPrint (c : Char) :=
   0x20 ≤ c.toByte && c.toByte ≤ 0x7E
 
+/-! ## Case Conversion -/
+
+def toLower (c : Char) : Char :=
+  if h : c.isUpper then
+    have h : c.toNat + 32 < 128 := by
+      simp [isUpper] at h
+      have hr : c.toNat ≤ 90 := h.2
+      apply Nat.add_lt_of_lt_sub
+      apply Nat.lt_of_le_of_lt hr
+      decide
+    .ofNatAux _ h
+  else c
+
+def toUpper (c : Char) : Char :=
+  if h : c.isLower then
+    have h : c.toNat - 32 < 128 := by
+      simp [isLower] at h
+      have hl : 97 ≤ c.toNat := h.1
+      apply Nat.sub_lt_left_of_lt_add
+      · apply Nat.le_trans _ hl; decide
+      · apply Nat.lt_of_lt_of_le c.toNat_lt _; decide
+    .ofNatAux _ h
+  else c
+
 /-! ## Control Characters -/
 
 /-- Null character (ASCII NUL) -/
