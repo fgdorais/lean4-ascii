@@ -15,3 +15,6 @@ def Char.isASCII (c : Char) : Bool := c.toNat < 128
 
 /-- Test whether Unicode string is an ASCII string -/
 def String.isASCII (s : String) : Bool := s.all Char.isASCII
+
+@[ext] theorem Char.ext : {c₁ c₂ : Char} → c₁.val = c₂.val → c₁ = c₂
+  | ⟨_,_⟩, ⟨_,_⟩, rfl => rfl
