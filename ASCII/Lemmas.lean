@@ -15,8 +15,8 @@ theorem toNat_eq_iff_ofNatAux_eq (c : Char) (n : Nat) (hn : n < 128) :
     c.toNat = n ↔ ofNatAux n hn = c := by
   simp only [toNat, ofNatAux]
   constructor
-  · intro h; cases h; ext; simp [dif_pos c.toNat_lt, UInt8.toNat]
-  · intro h; cases h; simp [dif_pos hn, ofNatAux, UInt8.toNat]
+  · intro h; cases h; ext; simp only [dif_pos c.toNat_lt, UInt8.toNat]
+  · intro h; cases h; simp only [dif_pos hn, ofNatAux, UInt8.toNat]
 
 theorem toNat_ofNatAux (n : Nat) (hn : n < 128) : toNat (ofNatAux n hn) = n := by
   rw [toNat_eq_iff_ofNatAux_eq]
@@ -42,11 +42,11 @@ theorem toUnicode_eq_iff_ofUnicode_eq (c : Char) (u : Unicode.Char) (hu : u.isAS
   constructor
   · intro h; cases h
     simp [_root_.Char.isASCII, _root_.Char.toNat] at hu
-    have hlt : c.toNat < 2 ^ 8 := by apply Nat.lt_trans hu; decide
+    have hlt : c.toNat < 256 := by apply Nat.lt_trans hu; decide
     ext; simp [Nat.mod_eq_of_lt hlt]
   · intro h; cases h
     simp [_root_.Char.isASCII, _root_.Char.toNat] at hu
-    have hlt : u.val.toNat < 2 ^ 8 := by apply Nat.lt_trans hu; decide
+    have hlt : u.val.toNat < 256 := by apply Nat.lt_trans hu; decide
     ext; simp [Nat.mod_eq_of_lt hlt]
 
 theorem toUnicode_ofUnicode (u : Unicode.Char) (hu : u.isASCII) :

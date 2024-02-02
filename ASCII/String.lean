@@ -79,7 +79,7 @@ where
     if h : i = s.length then r else
       have hi : i < s.length := Nat.lt_of_le_of_ne hi h
       loop (i + 1) (Nat.succ_le_of_lt hi) (r.push s[i])
-termination_by loop => s.length - i
+termination_by s.length - i
 
 instance : Coe ASCII.String Unicode.String where
   coe := String.toUnicode
