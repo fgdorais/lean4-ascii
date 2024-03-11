@@ -7,9 +7,9 @@ import ASCII.String
 namespace ASCII
 
 /-- ASCII substring type -/
-structure Substring where
+protected structure Substring where
   /-- Underlying string -/
-  data  : String
+  data  : ASCII.String
   /-- Start position -/
   start : Nat
   /-- Stop position -/
@@ -18,9 +18,9 @@ structure Substring where
   valid : start ≤ stop ∧ stop ≤ data.length
 
 /-- Length of a substring -/
-abbrev Substring.length (s : Substring) := s.stop - s.start
+abbrev Substring.length (s : ASCII.Substring) := s.stop - s.start
 
-instance : GetElem Substring Nat Char fun s i => i < s.length where
+instance : GetElem ASCII.Substring Nat ASCII.Char fun s i => i < s.length where
   getElem s i h :=
     have : s.start + i < s.data.length := by
       rw [Nat.add_comm]
@@ -28,7 +28,7 @@ instance : GetElem Substring Nat Char fun s i => i < s.length where
       exact Nat.add_lt_of_lt_sub h
     s.data[s.start + i]
 
-instance : Stream Substring Char where
+instance : Stream ASCII.Substring ASCII.Char where
   next? s :=
     if h : s.start < s.stop then
       have valid := ⟨Nat.succ_le_of_lt h, s.valid.2⟩

@@ -6,7 +6,7 @@ import ASCII.Char
 
 namespace ASCII
 
-structure String where
+protected structure String where
   /-- Underlying byte data -/
   toByteArray : ByteArray
   /-- Validity -/
@@ -22,7 +22,7 @@ def mkEmpty (size : Nat) : ASCII.String where
 /-- Empty string -/
 abbrev empty : ASCII.String := mkEmpty 0
 
-instance : Inhabited String where
+instance : Inhabited ASCII.String where
   default := .empty
 
 /-- Length of a string -/
@@ -31,11 +31,11 @@ abbrev length (s : ASCII.String) := s.toByteArray.size
 @[ext] protected theorem ext : {s t : ASCII.String} → s.toByteArray = t.toByteArray → s = t
   | ⟨_,_⟩, ⟨_,_⟩, rfl => rfl
 
-instance : GetElem String Nat Char fun s i => i < s.length where
+instance : GetElem ASCII.String Nat ASCII.Char fun s i => i < s.length where
   getElem s i h := ⟨s.toByteArray.get ⟨i, h⟩, s.valid i⟩
 
 /-- Append a character `c` at the end of string `s` -/
-def push (s : String) (c : Char) : String where
+def push (s : ASCII.String) (c : ASCII.Char) : ASCII.String where
   toByteArray := s.toByteArray.push c.toByte
   valid i h := by
     if hlt : i < s.toByteArray.size then
@@ -52,7 +52,7 @@ def push (s : String) (c : Char) : String where
       exact c.valid
 
 /-- Append a string `t` at the end of string `s` -/
-def append (s t : String) : String where
+def append (s t : ASCII.String) : ASCII.String where
   toByteArray := s.toByteArray ++ t.toByteArray
   valid i h := by
     simp [getElem_fin, ByteArray.getElem_eq_data_getElem, ByteArray.append_data]
@@ -66,7 +66,7 @@ def append (s t : String) : String where
       exact t.valid (i - s.toByteArray.size)
 
 /-- Extract a substring from string `s` -/
-def extract (s : String) (start stop : Nat) : String where
+def extract (s : ASCII.String) (start stop : Nat) : ASCII.String where
   toByteArray := s.toByteArray.extract start stop
   valid i h := by rw [ByteArray.get_extract]; exact s.valid (start + i)
 
