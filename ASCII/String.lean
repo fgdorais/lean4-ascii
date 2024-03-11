@@ -112,11 +112,11 @@ alias _root_.String.toASCII! := ofUnicode!
 
 open Lean Parser in
 /-- Syntax for ASCII string -/
-macro "a" noWs s:strLit : term =>
+macro "a#" noWs s:strLit : term =>
   if s.getString.isASCII then
     `(String.toASCII $s rfl)
   else
     Lean.Macro.throwError "expected ASCII string"
 
 instance : Repr ASCII.String where
-  reprPrec s _ := s!"a{repr s.toUnicode}"
+  reprPrec s _ := s!"a#{repr s.toUnicode}"

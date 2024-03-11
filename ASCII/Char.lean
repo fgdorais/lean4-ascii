@@ -71,15 +71,19 @@ def ofUnicode! (c : Unicode.Char) : ASCII.Char :=
   if h : c.isASCII then ofUnicode c h else panic! "character not in ASCII range"
 alias _root_.Char.toASCII! := ofUnicode!
 
+open Lean Parser in
+/-- Syntax for ASCII characters -/
+macro "a#" noWs c:charLit : term =>
+  match Syntax.isCharLit? c with
+  | some c =>
+    if c.isASCII then
+      `(Char.toASCII $(Syntax.mkCharLit c) rfl)
+    else
+      Lean.Macro.throwError "expected ASCII character"
+  | none => unreachable!
+
 instance : Repr ASCII.Char where
-  reprPrec char prec :=
-    Repr.addAppParen
-      (Std.Format.group
-        (Std.Format.nest (if prec >= max_prec then 1 else 2)
-          (Std.Format.text "ASCII.Char.ofNat" ++
-            Std.Format.line ++
-            reprArg char.toNat)))
-      prec
+  reprPrec s _ := s!"a#{repr s.toUnicode}"
 
 /-! ## Character Properties -/
 
