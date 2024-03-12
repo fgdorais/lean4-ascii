@@ -65,6 +65,9 @@ def append (s t : ASCII.String) : ASCII.String where
       rw [Array.get_append_right (hle:=hle) (hlt:=h)]
       exact t.valid (i - s.toByteArray.size)
 
+instance : Append ASCII.String where
+  append := append
+
 /-- Extract a substring from string `s` -/
 def extract (s : ASCII.String) (start stop : Nat) : ASCII.String where
   toByteArray := s.toByteArray.extract start stop
