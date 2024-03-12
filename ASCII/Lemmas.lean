@@ -119,3 +119,70 @@ theorem toUpper_toUpper (c : ASCII.Char) : c.toUpper.toUpper = c.toUpper :=
   toUpper_eq_self_of_not_isLower <| not_isLower_toUpper _
 
 end Char
+
+/-! # String Lemmas -/
+
+namespace String
+
+@[simp] theorem mkEmpty_eq (cap : Nat) : mkEmpty cap = a#"" := rfl
+
+@[simp] theorem append_eq (s t : ASCII.String) : append s t = s ++ t := rfl
+
+/-! ### toByteArray -/
+
+@[simp] theorem toByteArray_nil : a#"".toByteArray = ByteArray.empty := rfl
+
+@[simp] theorem toByteArray_push (s : ASCII.String) (c : ASCII.Char) :
+    (s.push c).toByteArray = s.toByteArray.push c.toByte := rfl
+
+@[simp] theorem toByteArray_append (s t : ASCII.String) :
+    (s ++ t).toByteArray = s.toByteArray ++ t.toByteArray := rfl
+
+/-! ### length -/
+
+@[simp] theorem length_nil : a#"".length = 0 := rfl
+
+@[simp] theorem length_push (s : ASCII.String) (c : ASCII.Char) : (s.push c).length = s.length + 1 := by
+  simp [length]
+
+theorem length_append (s t : ASCII.String) : (s ++ t).length = s.length + t.length := by
+  simp [length, ByteArray.size_append]
+
+/-! ### append -/
+
+@[simp] theorem append_nil (s : ASCII.String) : s ++ a#"" = s := by
+  ext; simp
+
+@[simp] theorem nil_append (t : ASCII.String) : a#"" ++ t = t := by
+  ext; simp
+
+theorem append_assoc (s t u : ASCII.String) : (s ++ t) ++ u = s ++ (t ++ u) := by
+  ext; simp [Array.append_assoc]
+
+theorem append_push (s t : ASCII.String) (c : ASCII.Char) : s ++ t.push c = (s ++ t).push c := by
+  ext; simp [Array.push_eq_append_singleton, Array.append_assoc]
+
+/-! ### get -/
+
+@[simp] theorem toByte_get (s : ASCII.String) (i : Nat) (h : i < s.length) :
+    s[i].toByte = s.toByteArray[i] := rfl
+
+theorem get_push_lt (s : ASCII.String) (c : ASCII.Char) (i : Nat) (h : i < s.length)
+    (h' : i < (s.push c).length := length_push .. ▸ Nat.lt_trans h (Nat.lt_succ_self _)) :
+    (s.push c)[i] = s[i] := by
+  ext; simp [ByteArray.get_push_lt, h]
+
+theorem get_push_eq (s : ASCII.String) (c : ASCII.Char) : (s.push c)[s.length] = c := by
+  ext; simp
+
+theorem get_append_left (s t : ASCII.String) (i : Nat) (hlt : i < s.length)
+    (h : i < (s ++ t).length := length_append .. ▸ Nat.lt_of_lt_of_le hlt (Nat.le_add_right _ _)) :
+    (s ++ t)[i] = s[i] := by
+  ext; simp [ByteArray.get_append_left hlt]
+
+theorem get_append_right (s t : ASCII.String) (i : Nat) (hle : s.length ≤ i) (h : i < (s ++ t).length)
+    (h' : i - s.length < t.length := Nat.sub_lt_left_of_lt_add hle (length_append .. ▸ h)) :
+    (s ++ t)[i] = t[i - s.length] := by
+  ext; simp [length, ByteArray.get_append_right hle]
+
+end String
