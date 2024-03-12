@@ -138,15 +138,23 @@ namespace String
 @[simp] theorem toByteArray_append (s t : ASCII.String) :
     (s ++ t).toByteArray = s.toByteArray ++ t.toByteArray := rfl
 
+@[simp] theorem toByteArray_extract (s : ASCII.String) (star stop : Nat) :
+    (s.extract start stop).toByteArray = s.toByteArray.extract start stop := rfl
+
 /-! ### length -/
 
 @[simp] theorem length_nil : a#"".length = 0 := rfl
 
-@[simp] theorem length_push (s : ASCII.String) (c : ASCII.Char) : (s.push c).length = s.length + 1 := by
+@[simp] theorem length_push (s : ASCII.String) (c : ASCII.Char) :
+    (s.push c).length = s.length + 1 := by
   simp [length]
 
 theorem length_append (s t : ASCII.String) : (s ++ t).length = s.length + t.length := by
   simp [length, ByteArray.size_append]
+
+theorem length_extract (s : ASCII.String) (start stop : Nat) :
+    (s.extract start stop).length = min stop s.length - start := by
+  simp [length, ByteArray.size_extract]
 
 /-! ### append -/
 
@@ -175,14 +183,19 @@ theorem get_push_lt (s : ASCII.String) (c : ASCII.Char) (i : Nat) (h : i < s.len
 theorem get_push_eq (s : ASCII.String) (c : ASCII.Char) : (s.push c)[s.length] = c := by
   ext; simp
 
-theorem get_append_left (s t : ASCII.String) (i : Nat) (hlt : i < s.length)
+theorem get_append_left {s t : ASCII.String} {i : Nat} (hlt : i < s.length)
     (h : i < (s ++ t).length := length_append .. ▸ Nat.lt_of_lt_of_le hlt (Nat.le_add_right _ _)) :
     (s ++ t)[i] = s[i] := by
   ext; simp [ByteArray.get_append_left hlt]
 
-theorem get_append_right (s t : ASCII.String) (i : Nat) (hle : s.length ≤ i) (h : i < (s ++ t).length)
+theorem get_append_right {s t : ASCII.String} {i : Nat} (hle : s.length ≤ i) (h : i < (s ++ t).length)
     (h' : i - s.length < t.length := Nat.sub_lt_left_of_lt_add hle (length_append .. ▸ h)) :
     (s ++ t)[i] = t[i - s.length] := by
   ext; simp [length, ByteArray.get_append_right hle]
+
+theorem get_extract {s : ASCII.String} {start stop} (h : i < (s.extract start stop).length)
+    (h' : start + i < s.length := ByteArray.get_extract_aux h) :
+    (s.extract start stop)[i] = s[start + i] := by
+  ext; simp
 
 end String
