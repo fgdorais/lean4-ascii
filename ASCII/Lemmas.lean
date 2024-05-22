@@ -90,7 +90,7 @@ theorem not_isUpper_toLower (c : ASCII.Char) : ¬ c.toLower.isUpper := by
     intro h'
     absurd h'.2
     apply Nat.not_le_of_gt
-    apply Nat.lt_of_lt_of_le _ <| Nat.add_le_add_right h.1 32
+    apply Nat.lt_of_lt_of_le _ h.1
     decide
   · assumption
 
@@ -138,7 +138,7 @@ namespace String
 @[simp] theorem toByteArray_append (s t : ASCII.String) :
     (s ++ t).toByteArray = s.toByteArray ++ t.toByteArray := rfl
 
-@[simp] theorem toByteArray_extract (s : ASCII.String) (star stop : Nat) :
+@[simp] theorem toByteArray_extract (s : ASCII.String) (start stop : Nat) :
     (s.extract start stop).toByteArray = s.toByteArray.extract start stop := rfl
 
 /-! ### length -/
