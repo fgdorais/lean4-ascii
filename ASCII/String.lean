@@ -55,7 +55,7 @@ def push (s : ASCII.String) (c : ASCII.Char) : ASCII.String where
 def append (s t : ASCII.String) : ASCII.String where
   toByteArray := s.toByteArray ++ t.toByteArray
   valid i h := by
-    simp [getElem_fin, ByteArray.getElem_eq_data_getElem, ByteArray.append_data]
+    simp [ByteArray.getElem_eq_data_getElem, ByteArray.append_data]
     if hlt : i < s.toByteArray.size then
       rw [Array.get_append_left]; exact s.valid (h:=hlt)
     else
@@ -117,7 +117,7 @@ open Lean Parser in
 /-- Syntax for ASCII string -/
 macro "a#" noWs s:strLit : term =>
   if s.getString.isASCII then
-    `(String.toASCII $s rfl)
+    `(String.toASCII $s (by with_unfolding_all rfl))
   else
     Lean.Macro.throwError "expected ASCII string"
 
