@@ -55,7 +55,7 @@ def push (s : ASCII.String) (c : ASCII.Char) : ASCII.String where
 def append (s t : ASCII.String) : ASCII.String where
   toByteArray := s.toByteArray ++ t.toByteArray
   valid i h := by
-    simp [ByteArray.getElem_eq_data_getElem, ByteArray.append_data]
+    simp [ByteArray.getElem_eq_data_getElem, ByteArray.data_append]
     if hlt : i < s.toByteArray.size then
       rw [Array.get_append_left]; exact s.valid (h:=hlt)
     else
