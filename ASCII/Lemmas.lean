@@ -159,16 +159,16 @@ theorem length_extract (s : ASCII.String) (start stop : Nat) :
 /-! ### append -/
 
 @[simp] theorem append_nil (s : ASCII.String) : s ++ a#"" = s := by
-  ext; simp
+  ext : 2; simp
 
 @[simp] theorem nil_append (t : ASCII.String) : a#"" ++ t = t := by
-  ext; simp
+  ext : 2; simp
 
 theorem append_assoc (s t u : ASCII.String) : (s ++ t) ++ u = s ++ (t ++ u) := by
-  ext; simp [Array.append_assoc]
+  ext : 2; simp [Array.append_assoc]
 
 theorem append_push (s t : ASCII.String) (c : ASCII.Char) : s ++ t.push c = (s ++ t).push c := by
-  ext; simp [Array.push_eq_append_singleton, Array.append_assoc]
+  ext : 2; simp [Array.push_eq_append_singleton, Array.append_assoc]
 
 /-! ### get -/
 
