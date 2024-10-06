@@ -57,12 +57,12 @@ def append (s t : ASCII.String) : ASCII.String where
   valid i h := by
     simp [ByteArray.getElem_eq_data_getElem, ByteArray.data_append]
     if hlt : i < s.toByteArray.size then
-      rw [Array.get_append_left]; exact s.valid (h:=hlt)
+      rw [Array.getElem_append_left]; exact s.valid (h:=hlt)
     else
       have hle : s.toByteArray.size ≤ i := Nat.le_of_not_gt hlt
       have h : i - s.toByteArray.size < t.toByteArray.size :=
         Nat.sub_lt_left_of_lt_add hle (ByteArray.size_append .. ▸ h)
-      rw [Array.get_append_right (hle:=hle) (hlt:=h)]
+      rw [Array.getElem_append_right (hle:=hle) (hlt:=h)]
       exact t.valid (i - s.toByteArray.size)
 
 instance : Append ASCII.String where
