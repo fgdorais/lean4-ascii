@@ -15,8 +15,8 @@ theorem toNat_eq_iff_ofNatAux_eq (c : ASCII.Char) (n : Nat) (hn : n < 128) :
     c.toNat = n ↔ ofNatAux n hn = c := by
   simp only [toNat, ofNatAux]
   constructor
-  · intro h; cases h; ext; simp only [dif_pos c.toNat_lt, UInt8.toNat]
-  · intro h; cases h; simp only [dif_pos hn, ofNatAux, UInt8.toNat]
+  · intro h; cases h; ext; simp only [UInt8.toNat]; rfl
+  · intro h; cases h; simp only [UInt8.toNat]; rfl
 
 theorem toNat_ofNatAux (n : Nat) (hn : n < 128) : toNat (ofNatAux n hn) = n := by
   rw [toNat_eq_iff_ofNatAux_eq]
