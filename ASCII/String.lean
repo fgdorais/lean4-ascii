@@ -32,7 +32,7 @@ abbrev length (s : ASCII.String) := s.toByteArray.size
   | ⟨_,_⟩, ⟨_,_⟩, rfl => rfl
 
 instance : GetElem ASCII.String Nat ASCII.Char fun s i => i < s.length where
-  getElem s i h := ⟨s.toByteArray.get ⟨i, h⟩, s.valid i⟩
+  getElem s i h := ⟨s.toByteArray.get i, s.valid i⟩
 
 /-- Append a character `c` at the end of string `s` -/
 def push (s : ASCII.String) (c : ASCII.Char) : ASCII.String where
