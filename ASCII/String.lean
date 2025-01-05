@@ -62,7 +62,7 @@ def append (s t : ASCII.String) : ASCII.String where
       have hle : s.toByteArray.size ≤ i := Nat.le_of_not_gt hlt
       have h : i - s.toByteArray.size < t.toByteArray.size :=
         Nat.sub_lt_left_of_lt_add hle (ByteArray.size_append .. ▸ h)
-      rw [Array.getElem_append_right (hle:=hle) (hlt:=h)]
+      rw [Array.getElem_append_right (hle:=hle)]
       exact t.valid (i - s.toByteArray.size)
 
 instance : Append ASCII.String where
