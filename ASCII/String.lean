@@ -16,7 +16,7 @@ namespace String
 
 /-- Empty string with specific capacity -/
 def mkEmpty (size : Nat) : ASCII.String where
-  toByteArray := .mkEmpty size
+  toByteArray := .emptyWithCapacity size
   valid := by intros; contradiction
 
 /-- Empty string -/
@@ -117,7 +117,7 @@ open Lean Parser in
 /-- Syntax for ASCII string -/
 macro "a#" noWs s:strLit : term =>
   if s.getString.isASCII then
-    `(String.toASCII $s (by with_unfolding_all rfl))
+    `(String.toASCII $s (by native_decide))
   else
     Lean.Macro.throwError "expected ASCII string"
 
