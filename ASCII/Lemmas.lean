@@ -43,7 +43,7 @@ theorem toUnicode_eq_iff_ofUnicode_eq (c : ASCII.Char) (u : Unicode.Char) (hu : 
   · intro h; cases h
     simp [_root_.Char.isASCII, _root_.Char.toNat] at hu
     have hlt : c.toNat < 256 := by apply Nat.lt_trans hu; decide
-    ext; simp [Nat.mod_eq_of_lt hlt]
+    ext; simp
   · intro h; cases h
     simp [_root_.Char.isASCII, _root_.Char.toNat] at hu
     have hlt : u.val.toNat < 256 := by apply Nat.lt_trans hu; decide
