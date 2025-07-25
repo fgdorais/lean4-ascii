@@ -41,12 +41,12 @@ theorem toUnicode_eq_iff_ofUnicode_eq (c : ASCII.Char) (u : Unicode.Char) (hu : 
   simp only [Char.toUnicode, ofUnicode]
   constructor
   · intro h; cases h
-    simp [_root_.Char.isASCII, _root_.Char.toNat] at hu
+    simp only [Char.isASCII, _root_.Char.toNat, UInt8.toNat_toUInt32, decide_eq_true_eq] at hu
     have hlt : c.toNat < 256 := by apply Nat.lt_trans hu; decide
     ext; simp
   · intro h; cases h
-    simp [_root_.Char.isASCII, _root_.Char.toNat] at hu
-    have hlt : u.val.toNat < 256 := by apply Nat.lt_trans hu; decide
+    simp only [Char.isASCII, decide_eq_true_eq] at hu
+    have hlt : u.toNat < 256 := by apply Nat.lt_trans hu; decide
     ext; simp [Nat.mod_eq_of_lt hlt]
 
 theorem toUnicode_ofUnicode (u : Unicode.Char) (hu : u.isASCII) :
