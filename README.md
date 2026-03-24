@@ -1,5 +1,9 @@
 # Lean 4 / ASCII
 
+This repo has been deprecated since January 1, 2026. A much better replacement is expected in Summer 2026. Stay tuned!
+
+------
+
 ASCII support for [Lean 4](https://leanprover.github.io/).
 
 ## Installation
